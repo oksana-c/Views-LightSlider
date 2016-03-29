@@ -1,0 +1,14 @@
+#views-live-preview .slider-wrapper {
+  max-width: 1000px;
+  width: auto;
+}
+.slider-wrapper {
+  position: relative;
+  width: auto;
+}
+.lSSlideOuter .lSPager.lSGallery img {
+  width: 100%;
+}
+.lSSlideOuter .lSPager.lSGallery {
+  margin: 0 auto;
+}

@@ -1,0 +1,12 @@
+name = Views LightSlider
+description = Create sliders powered by jQuery lightSlider plugin via Views
+core = 7.x
+package = Views
+
+dependencies[] = libraries
+dependencies[] = views
+;dependencies[] = jquery_update
+
+files[] = views_lightslider.views.inc
+files[] = views_lightslider_plugin_row_lightsliderfields.inc
+files[] = views_lightslider_style_plugin.inc

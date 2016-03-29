@@ -1,0 +1,95 @@
+/*
+ * Coffee
+ * Theme for LightSlider
+ */
+ @import url(https://fonts.googleapis.com/css?family=Oleo+Script);
+.slider-wrapper.theme-mocha {
+	background-color: #a49f8c;
+	background-image: url('img/texture.png');
+	background-repeat: repeat;
+	color: #989387;
+	font-family: sans-serif;
+	font-size: 1em;
+	max-width: 100%;
+	padding: 1em 3em;
+	position: relative;
+	width: auto;
+}
+.slider-wrapper.theme-mocha .slide-content,
+.slider-wrapper.theme-mocha .slide-content h2,
+.slider-wrapper.theme-mocha .slide-content div,
+.slider-wrapper.theme-mocha .slide-content p,
+.slider-wrapper.theme-mocha .slide-content a ,
+.slider-wrapper.theme-mocha .slide-content img{
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	display: block;
+	transition: all 1s ease;
+	zoom:1;	
+}
+.slider-wrapper.theme-mocha .slide-content {
+	background-color: #f0edf4;
+	border: 1px solid #fffbea;
+	display: block;
+	height: auto;
+	position: relative;
+	width: 100%;
+}
+.slider-wrapper.theme-mocha .slide-content h2 {
+	border-bottom: 1px dashed #a49f8c;
+}
+.slider-wrapper.theme-mocha .lSPager.lSGallery img {
+	width: 100%;
+}
+.slider-wrapper.theme-mocha h2 {
+	color: #736656;
+	font-family: 'Oleo Script', serif;
+	font-size: 2em !important;
+	text-align: center;
+}
+.slider-wrapper.theme-mocha .slide-content .desc {
+	color: #878477;
+	margin: 1em;
+	min-height: 70px;
+	width: auto;
+}
+.slider-wrapper.theme-mocha .slide-content .desc .learn-more {
+	background-color: #a49f8c;
+	color: #F0EDE4;
+	display: inline-block;
+	font-family: 'Oleo Script', serif;
+	font-size:1.2em;
+	padding: 0.2em 1em;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.slider-wrapper.theme-mocha .slide-content a:hover,
+.slider-wrapper.theme-mocha .slide-content a:focus,
+.slider-wrapper.theme-mocha .slide-content a:active {
+	text-decoration: none;
+}
+.slider-wrapper.theme-mocha .slide-content:hover .learn-more,
+.slider-wrapper.theme-mocha .slide-content:focus .learn-more,
+.slider-wrapper.theme-mocha .slide-content:active .learn-more {
+	background-color: #736656;
+	text-align: center;
+}
+.slider-wrapper.theme-mocha .lSAction > a {
+	background-image: url('img/controls.png');
+}
+.slider-wrapper.theme-mocha .lSAction > .lSPrev {
+  left: 1em;
+}
+.slider-wrapper.theme-mocha .lSAction > .lSNext {
+  right: 1em;
+}
+.slider-wrapper.theme-mocha .lSPager.lSpg > li a {
+  background-color: #736656;
+}
+.slider-wrapper.theme-mocha .lSPager.lSpg > li:hover a,
+.slider-wrapper.theme-mocha .lSPager.lSpg > li.active a {
+    background-color: #F0EDE4;
+}

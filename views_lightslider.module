@@ -1,0 +1,323 @@
+<?php
+
+/**
+ * @file
+ * The implementation of Views LightSlider module.
+ */
+/**
+ * Implements hook_help().
+ */
+function views_lightslider_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#views_lightslider':
+      $output = file_get_contents(drupal_get_path('module', 'views_lightslider') . '/README.txt');
+      return '<pre>' . check_plain($output) . '</pre>';
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function views_lightslider_views_api() {
+  return array('api' => '3');
+}
+
+/**
+ * Implementation of template preprocess for the view
+ */
+function template_preprocess_views_lightslider_view(&$vars) {
+  $view = $vars['view'];
+  $options = $vars['options'];
+
+  $vars['views_lightslider_id'] = drupal_html_id('views-lightslider-' . $view->name . '-' . $view->current_display);
+
+  $vars['classes_array'][] = 'slider-wrapper';
+
+  $vars['classes_array'][] = 'theme-' . $options['style'];
+
+  $vars['responsive_breakpoint_settings'] = array();
+
+  if ($options['responsive'] >= 0) {
+    for ($i=1; $i<=$options['responsive']+1; $i++) {
+
+      $breakpoint_size = $options['responsive_' . $i]['breakpoint'];
+      $breakpoint_settings = array();
+      // construct setting array
+      // to prevent override of default setting - do not include empty variables in settings array
+      if (!empty($options['responsive_' . $i]['item'])) {
+        $breakpoint_settings['item'] = $options['responsive_' . $i]['item'];
+      }
+      if (!empty($options['responsive_' . $i]['slideMove'])) {
+        $breakpoint_settings['slideMove'] = $options['responsive_' . $i]['slideMove'];
+      }
+      if (!empty($options['responsive_' . $i]['slideMargin'])) {
+        $breakpoint_settings['slideMargin'] = $options['responsive_' . $i]['slideMargin'];
+      }
+      if (!empty($options['responsive_' . $i]['thumbItem'])) {
+        $breakpoint_settings['thumbItem'] = $options['responsive_' . $i]['thumbItem'];
+      }
+      if (!empty($options['responsive_' . $i]['thumbMargin'])) {
+        $breakpoint_settings['thumbMargin'] = $options['responsive_' . $i]['thumbMargin'];
+      }
+
+      $vars['responsive_breakpoint_settings'][$i-1] = array(
+        'breakpoint' => $breakpoint_size,
+        'settings' => $breakpoint_settings,
+      );
+    }
+  }
+
+  $config = array();
+  $params = array(
+    'item' => (int) $options['item'],
+    'mode' => $options['mode'],
+    'autoWidth' => $options['autoWidth'] == 'true' ? TRUE : FALSE,
+    'slideMove' => (int) $options['slideMove'],
+    'slideMargin' => (int) $options['slideMargin'],
+    'addClass' => $options['addClass'],
+    'useCSS' => $options['useCSS'] == 'true' ? TRUE : FALSE,
+    // @todo add easing options as select dropdown list instead of making user enter it
+    'cssEasing' => $options['cssEasing'],
+    // @todo same as previous
+    'easing' => $options['easing'],
+    'speed' => (int) $options['speed'],
+    'auto' => $options['auto'] == 'true' ? TRUE : FALSE,
+    'pauseOnHover' => $options['pauseOnHover'] == 'true' ? TRUE : FALSE,
+    'loop' => $options['loop'] == 'true' ? TRUE : FALSE,
+    'slideEndAnimation' => $options['slideEndAnimation'] == 'true' ? TRUE : FALSE,
+    'pause' => (int) $options['pause'],
+    'keyPress' => $options['keyPress'] == 'true' ? TRUE : FALSE,
+    'controls' => $options['controls'] == 'true' ? TRUE : FALSE,
+    'prevHtml' => $options['prevHtml'],
+    'nextHtml' => $options['nextHtml'],
+    'rtl' => $options['rtl'] == 'true' ? TRUE : FALSE,
+    'adaptiveHeight' => $options['adaptiveHeight'] == 'true' ? TRUE : FALSE,
+    'vertical' => $options['vertical'] == 'true' ? TRUE : FALSE,
+    'verticalHeight' => (int) $options['verticalHeight'],
+    'vThumbWidth' => (int) $options['vThumbWidth'],
+    'thumbItem' => (int) $options['thumbItem'],
+    'pager' => $options['pager'] == 'true' ? TRUE : FALSE,
+    'gallery' => $options['gallery'] == 'true' ? TRUE : FALSE,
+    'galleryThumbImageStyle' => $options['galleryThumbImageStyle'],
+    'galleryMargin' => (int) $options['galleryMargin'],
+    'thumbMargin' => (int) $options['thumbMargin'],
+    'enableDrag' => $options['enableTouch'] == 'true' ? TRUE : FALSE,
+    'enableTouch' => $options['enableDrag'] == 'true' ? TRUE : FALSE,
+    'freeMove' => $options['freeMove'] == 'true' ? TRUE : FALSE,
+    'responsive' => $options['responsive'] !== 0 ? $vars['responsive_breakpoint_settings'] : '',
+
+    // @todo - define Callbacks
+    // @todo - define Public Functions
+
+  );
+
+  // hide when only single slide
+  if (count($view->result) <= 1) {
+    $params['pager'] = FALSE;
+    $params['controls'] = FALSE;
+  }
+
+  $config[$vars['views_lightslider_id']] = $params;
+
+  drupal_add_js(array('views_lightslider' => $config), 'setting');
+
+  views_lightslider_add_libraries($options['style']);
+}
+
+/**
+ * Implementation of template preprocess for the view fields
+ */
+function template_preprocess_views_lightslider_view_lightsliderfields(&$vars) {
+  $view = & $vars['view'];
+  $options = $vars['options'];
+  $style = $view->style_options;
+  $row = $vars['row'];
+  $presetname = NULL;
+  $thumb_presetname = NULL;
+  $data_thumb_attribute = NULL;
+  if (is_object($view)) {
+    if (isset($view->field[$options['image_field']])) {
+      if (is_object($view->field[$options['image_field']])) {
+        if (isset($view->field[$options['image_field']]->options['settings']['image_style'])) {
+          $presetname = $view->field[$options['image_field']]->options['settings']['image_style'];
+        }
+        if ($style['gallery'] == 'true' && isset($style['galleryThumbImageStyle'])) {
+          $thumb_presetname = $style['galleryThumbImageStyle'];
+        }
+      }
+    }
+  }
+
+  $img = NULL;
+  $title = NULL;
+  $description = NULL;
+  $link = NULL;
+  $slide_output = NULL;
+  $slide_content_build = NULL;
+  $data_thumb_attribute = NULL;
+
+  // Force URL format for image_field
+  if (isset($view->field[$options['image_field']])) {
+    $view->field[$options['image_field']]->options['alter']['make_link'] = 0;
+  }
+  // Force URL format for title_field
+  if (isset($view->field[$options['title_field']])) {
+    $view->field[$options['title_field']]->options['alter']['make_link'] = 0;
+    $view->field[$options['title_field']]->options['alter']['path'] = '';
+    $view->field[$options['title_field']]->options['link_to_node'] = 0;
+  }
+  if (isset($view->field[$options['description_field']])) {
+    $view->field[$options['description_field']]->options['alter']['make_link'] = 0;
+    $view->field[$options['description_field']]->options['alter']['path'] = '';
+    $view->field[$options['description_field']]->options['link_to_node'] = 0;
+  }
+
+  // link
+  if (isset($view->field[$options['link_field']])) {
+    //Node: Link
+    if ($view->field[$options['link_field']]->definition['handler'] == 'views_handler_field_node_link') {
+      $link = url('node/' . $view->result[$view->row_index]->nid);
+    }
+    // Link Field
+    else {
+      $view->field[$options['link_field']]->options['format'] = 'plain';
+    }
+  }
+
+  foreach ($view->field as $id => $field) {
+    $field_output = $view->field[$id]->theme($vars['row']);
+
+    switch ($id) {
+      case $options['image_field']:
+        $field_image = "field_{$options['image_field']}";
+
+        // No image - no content.
+        if (!isset($row->{$field_image}[0]['raw']['uri'])) {
+          $vars['content'] = NULL;
+          $vars['data_thumb'] = NULL;
+          return;
+        }
+        else {
+          $image_url = $field_output = $row->{$field_image}[0]['raw']['uri'];
+
+          $params = array(
+            'style_name' => isset($presetname) ? $presetname : NULL,
+            'path' => isset($image_url) ? $image_url : NULL,
+            'title' => isset($title) ? $title : NULL,
+            'alt' => isset($title) ? $title : NULL,
+          );
+
+          $img = (!$presetname) ? theme('image', $params) : theme('image_style', $params);
+
+          if ($style['gallery'] == 'true') {
+            $image_thumb_url = image_style_url($thumb_presetname, $image_url);
+            $data_thumb_attribute = 'data-thumb = ' . $image_thumb_url;
+          }
+        }
+        break;
+
+      case $options['title_field']:
+        $title = $field_output;
+        break;
+
+      case $options['description_field']:
+          $description = $field_output;
+        break;
+
+      case $options['link_field']:
+        if ($field->definition['handler'] != 'views_handler_field_node_link') {
+          $link = check_url($field_output);
+        }
+        break;
+
+    }
+  }
+
+  $title = isset($title) ? '<h2>' . $title . '</h2>' : NULL;
+  $description = isset($description) ? '<div class="desc">' . $description . '</div>' : NULL;
+
+  $slide_content_build = $img . $title . $description;
+
+  // wrap link around slide content if available
+  if ($link) {
+    $slide_output = l($slide_content_build, $link, array('html' => TRUE, 'attributes' => array('class' => array('views-processed'))));
+  }
+  else {
+    $slide_output = $slide_content_build;
+  }
+
+  $vars['content'] = $slide_output;
+  $vars['data_thumb'] = $data_thumb_attribute;
+}
+
+/**
+ * Add the needed libraries and css.
+ */
+function views_lightslider_add_libraries($style = 'default') {
+  // Don't load javascript unless libraries module is present.
+  if (module_exists('libraries')) {
+    $lib_path = libraries_get_path('lightslider');
+
+    // Load jQuery plugin
+    if (!empty($lib_path)) {
+      // Attempt to use minified version of lightslider plugin.
+      if (file_exists($lib_path . '/dist/js/lightslider.min.js')) {
+        drupal_add_js($lib_path . '/dist/js/lightslider.min.js');
+      }
+      // Otherwise use non-minified version if available.
+      elseif (file_exists($lib_path . '/dist/js/lightslider.js')) {
+        drupal_add_js($lib_path . '/dist/js/lightslider.js');
+      }
+      // Load css
+      drupal_add_css($lib_path . '/dist/css/lightslider.css');
+    }
+  }
+
+  // Load js, css
+  $module_path = drupal_get_path('module', 'views_lightslider');
+  drupal_add_js($module_path . '/views_lightslider.js');
+  drupal_add_css($module_path . '/views_lightslider.css');
+  // Load theme's css if applicable
+  if ($style != 'none') {
+    drupal_add_css($module_path . '/themes/' . $style . '/' . $style . '.css');
+  }
+}
+
+/**
+ * List the available themes.
+ * @todo add more themes/skins
+ */
+function views_lightslider_list_themes() {
+  static $themes;
+
+  if (isset($themes)) {
+    return $themes;
+  }
+
+  $themes = array();
+
+  if (module_exists('views_lightslider')) {
+    $dir = drupal_get_path('module', 'views_lightslider') . '/themes';
+    if (!empty($dir) && $dir != NULL) {
+      if (is_dir($dir)) {
+        if ($handle = opendir($dir)) {
+          while (FALSE !== ($filename = readdir($handle))) {
+            if ($filename[0] != '.') {
+              $uri = "$dir/$filename";
+              $uri = file_stream_wrapper_uri_normalize($uri);
+              if (is_dir($uri)) {
+                $themes[drupal_strtolower($filename)] = t(drupal_ucfirst($filename));
+              }
+            }
+          }
+        }
+      }
+      natcasesort($themes);
+    }
+  }
+
+  // Insert None into the head
+  array_splice($themes, 0, 0, array('none' => t('Default')));
+
+  return $themes;
+}
