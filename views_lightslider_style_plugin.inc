@@ -32,20 +32,20 @@ class views_lightslider_style_plugin extends views_plugin_style {
     $options['pause'] = array('default' => '2000');
     $options['keyPress'] = array('default' => 'false');
     $options['controls'] = array('default' => 'true');
-    $options['prevHtml'] = array('default' => '');
-    $options['nextHtml'] = array('default' => '');
+    $options['controlsSettings']['prevHtml'] = array('default' => '');
+    $options['controlsSettings']['nextHtml'] = array('default' => '');
     $options['rtl'] = array('default' => 'false');
     $options['adaptiveHeight'] = array('default' => 'false');
     $options['vertical'] = array('default' => 'false');
     $options['verticalHeight'] = array('default' => '500');
-    $options['vThumbWidth'] = array('default' => '100');
-    $options['thumbItem'] = array('default' => '10');
     $options['pager'] = array('default' => 'true');
     $options['gallery'] = array('default' => 'true');
-    $options['galleryThumbImageStyle'] = array('default' => '');
-    $options['galleryMargin'] = array('default' => '5');
-    $options['thumbMargin'] = array('default' => '3');
-    $options['currentPagerPosition'] = array('default' => 'middle');
+    $options['gallerySettings']['vThumbWidth'] = array('default' => '100');
+    $options['gallerySettings']['thumbItem'] = array('default' => '10');
+    $options['gallerySettings']['galleryThumbImageStyle'] = array('default' => '');
+    $options['gallerySettings']['galleryMargin'] = array('default' => '5');
+    $options['gallerySettings']['thumbMargin'] = array('default' => '3');
+    $options['gallerySettings']['currentPagerPosition'] = array('default' => 'middle');
     $options['enableTouch'] = array('default' => 'true');
     $options['enableDrag'] = array('default' => 'true');
     $options['freeMove'] = array('default' => 'true');
@@ -227,18 +227,41 @@ class views_lightslider_style_plugin extends views_plugin_style {
       '#description' => t('If No, prev/next buttons will not be displayed.'),
     );
 
-    $form['prevHtml'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Custom HTML for prev control'),
-      '#default_value' => $this->options['prevHtml'],
-      '#size' => '30',
+    // Controls settings - fieldset
+    $form['controlsSettings'] = array(
+      '#title' => 'Controls Settings (optional)',
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#states' => array(
+          'visible' => array(
+          ':input[name="style_options[controls]"]' => array('value' => 'true'),
+        ),
+      ),
     );
 
-    $form['nextHtml'] = array(
+    $form['controlsSettings']['prevHtml'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Custom HTML for prev control'),
+      '#default_value' => $this->options['controlsSettings']['prevHtml'],
+      '#size' => '30',
+      '#states' => array(
+          'visible' => array(
+          ':input[name="style_options[controls]"]' => array('value' => 'true'),
+        ),
+      ),
+    );
+
+    $form['controlsSettings']['nextHtml'] = array(
       '#type' => 'textfield',
       '#title' => t('Custom HTML for next control'),
-      '#default_value' => $this->options['nextHtml'],
+      '#default_value' => $this->options['controlsSettings']['nextHtml'],
       '#size' => '30',
+      '#states' => array(
+          'visible' => array(
+          ':input[name="style_options[controls]"]' => array('value' => 'true'),
+        ),
+      ),
     );
 
     $form['rtl'] = array(
@@ -298,10 +321,23 @@ class views_lightslider_style_plugin extends views_plugin_style {
       '#description' => 'Enable thumbnails gallery',
     );
 
-    $form['galleryThumbImageStyle'] = array(
+    // Thumbnail Gallery settings - fieldset
+    $form['gallerySettings'] = array(
+      '#title' => 'Thumbnail Gallery Settings',
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#states' => array(
+          'visible' => array(
+          ':input[name="style_options[gallery]"]' => array('value' => 'true'),
+        ),
+      ),
+    );
+
+    $form['gallerySettings']['galleryThumbImageStyle'] = array(
       '#type' => 'select',
       '#title' => t('Image style for use in thumbs'),
-      '#default_value' => isset($this->options['galleryThumbImageStyle']) ? $this->options['galleryThumbImageStyle'] : NULL,
+      '#default_value' => isset($this->options['gallerySettings']['galleryThumbImageStyle']) ? $this->options['gallerySettings']['galleryThumbImageStyle'] : NULL,
       '#options' => array_merge(array('' => t('<none>')), $presets),
       '#states' => array(
           'visible' => array(
@@ -310,10 +346,10 @@ class views_lightslider_style_plugin extends views_plugin_style {
       ),
     );
 
-    $form['vThumbWidth'] = array(
+    $form['gallerySettings']['vThumbWidth'] = array(
       '#type' => 'textfield',
       '#title' => t('Thumbnail Width'),
-      '#default_value' => $this->options['vThumbWidth'],
+      '#default_value' => $this->options['gallerySettings']['vThumbWidth'],
       '#description' => 'width of gallery thumbnail while vertical mode active',
       '#size' => '6',
       '#states' => array(
@@ -323,10 +359,10 @@ class views_lightslider_style_plugin extends views_plugin_style {
       ),
     );
 
-    $form['thumbItem'] = array(
+    $form['gallerySettings']['thumbItem'] = array(
       '#type' => 'textfield',
       '#title' => t('Thumbnail Items'),
-      '#default_value' => $this->options['thumbItem'],
+      '#default_value' => $this->options['gallerySettings']['thumbItem'],
       '#description' => 'number of gallery thumbnail to show at a time',
       '#size' => '6',
       '#states' => array(
@@ -336,10 +372,10 @@ class views_lightslider_style_plugin extends views_plugin_style {
       ),
     );
 
-    $form['galleryMargin'] = array(
+    $form['gallerySettings']['galleryMargin'] = array(
       '#type' => 'textfield',
       '#title' => t('Spacing between thumbnail gallery and slider (in px)'),
-      '#default_value' => $this->options['galleryMargin'],
+      '#default_value' => $this->options['gallerySettings']['galleryMargin'],
       '#size' => '6',
       '#states' => array(
         'visible' => array(
@@ -348,10 +384,10 @@ class views_lightslider_style_plugin extends views_plugin_style {
       ),
     );
 
-    $form['thumbMargin'] = array(
+    $form['gallerySettings']['thumbMargin'] = array(
       '#type' => 'textfield',
       '#title' => t('Spacing between each thumbnail (in px)'),
-      '#default_value' => $this->options['thumbMargin'],
+      '#default_value' => $this->options['gallerySettings']['thumbMargin'],
       '#size' => '6',
       '#states' => array(
         'visible' => array(
@@ -360,11 +396,16 @@ class views_lightslider_style_plugin extends views_plugin_style {
       ),
     );
 
-    $form['currentPagerPosition'] = array(
+    $form['gallerySettings']['currentPagerPosition'] = array(
       '#type' => 'select',
       '#title' => t('Position of thumbnails . \'left\', \'middle\', \'right\''),
-      '#default_value' => $this->options['currentPagerPosition'],
+      '#default_value' => $this->options['gallerySettings']['currentPagerPosition'],
       '#options' => array('left' => t('Left'), 'middle' => t('Middle'), 'right' => 'Right'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="style_options[gallery]"]' => array('value' => 'true'),
+        ),
+      ),
     );
 
     $form['enableTouch'] = array(
@@ -417,7 +458,6 @@ class views_lightslider_style_plugin extends views_plugin_style {
       '#default_value' => $this->options['responsive_1']['breakpoint'],
       '#description' => t('e.g., 800'),
       '#size' => '4',
-      '#required' => TRUE,
       '#states' => array(
         'visible' => array(
           ':input[name="style_options[responsive]"]' => array(array('value' => '0'), array('value' => 1), array('value' => 2)),

@@ -88,19 +88,19 @@ function template_preprocess_views_lightslider_view(&$vars) {
     'pause' => (int) $options['pause'],
     'keyPress' => $options['keyPress'] == 'true' ? TRUE : FALSE,
     'controls' => $options['controls'] == 'true' ? TRUE : FALSE,
-    'prevHtml' => $options['prevHtml'],
-    'nextHtml' => $options['nextHtml'],
+    'prevHtml' => $options['controlsSettings']['prevHtml'],
+    'nextHtml' => $options['controlsSettings']['nextHtml'],
     'rtl' => $options['rtl'] == 'true' ? TRUE : FALSE,
     'adaptiveHeight' => $options['adaptiveHeight'] == 'true' ? TRUE : FALSE,
     'vertical' => $options['vertical'] == 'true' ? TRUE : FALSE,
     'verticalHeight' => (int) $options['verticalHeight'],
-    'vThumbWidth' => (int) $options['vThumbWidth'],
-    'thumbItem' => (int) $options['thumbItem'],
+    'vThumbWidth' => (int) $options['gallerySettings']['vThumbWidth'],
+    'thumbItem' => (int) $options['gallerySettings']['thumbItem'],
     'pager' => $options['pager'] == 'true' ? TRUE : FALSE,
     'gallery' => $options['gallery'] == 'true' ? TRUE : FALSE,
-    'galleryThumbImageStyle' => $options['galleryThumbImageStyle'],
-    'galleryMargin' => (int) $options['galleryMargin'],
-    'thumbMargin' => (int) $options['thumbMargin'],
+    'galleryThumbImageStyle' => $options['gallerySettings']['galleryThumbImageStyle'],
+    'galleryMargin' => (int) $options['gallerySettings']['galleryMargin'],
+    'thumbMargin' => (int) $options['gallerySettings']['thumbMargin'],
     'enableDrag' => $options['enableTouch'] == 'true' ? TRUE : FALSE,
     'enableTouch' => $options['enableDrag'] == 'true' ? TRUE : FALSE,
     'freeMove' => $options['freeMove'] == 'true' ? TRUE : FALSE,
@@ -141,8 +141,8 @@ function template_preprocess_views_lightslider_view_lightsliderfields(&$vars) {
         if (isset($view->field[$options['image_field']]->options['settings']['image_style'])) {
           $presetname = $view->field[$options['image_field']]->options['settings']['image_style'];
         }
-        if ($style['gallery'] == 'true' && isset($style['galleryThumbImageStyle'])) {
-          $thumb_presetname = $style['galleryThumbImageStyle'];
+        if ($style['gallery'] == 'true' && isset($style['gallerySettings']['galleryThumbImageStyle'])) {
+          $thumb_presetname = $style['gallerySettings']['galleryThumbImageStyle'];
         }
       }
     }
