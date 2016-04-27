@@ -6,6 +6,9 @@
   position: relative;
   width: auto;
 }
+.slider-wrapper .slide-content img {
+  max-width: 100%;
+}
 .lSSlideOuter .lSPager.lSGallery img {
   width: 100%;
 }
